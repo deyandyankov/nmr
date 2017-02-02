@@ -1,3 +1,6 @@
+"""
+Naive MapReduce module
+"""
 module nmr
   datadir = "NMR_DATADIR" in keys(ENV) ? ENV["NMR_DATADIR"] : "data"
   splitdir = "NMR_SPLITDIR" in keys(ENV) ? ENV["NMR_SPLITDIR"] : "split"
@@ -20,6 +23,9 @@ module nmr
     create_processes()
   end
 
+  """
+  Run a job of type nmr.NMR
+  """
   function runjob(j)
     phase_create_area(j)
     phase_map(j)
