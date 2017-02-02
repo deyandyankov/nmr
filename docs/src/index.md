@@ -3,5 +3,9 @@
 some text here
 
 ```@docs
-func(x)
+nmr
+```
+
+```@docs
+nmr.runjob
 ```
