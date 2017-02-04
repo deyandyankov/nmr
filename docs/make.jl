@@ -8,5 +8,6 @@ makedocs(
 
 deploydocs(
     deps = Deps.pip("pygments", "mkdocs", "mkdocs-material", "python-markdown-math"),
-    repo = "github.com/deyandyankov/nmr.git"
+    repo = "github.com/deyandyankov/nmr.git",
+    julia = "release"
 )

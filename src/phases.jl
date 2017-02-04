@@ -18,7 +18,7 @@ function runmapper(j)
   io_input = open(inputfile)
   io_output = write_sink(j, "map")
   for line in eachline(io_input)
-    v = j.mapper(line)
+    v = get(j.mapper(line), "")
     v == "" && continue
     write(io_output, v)
   end
