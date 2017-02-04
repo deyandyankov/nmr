@@ -31,14 +31,6 @@ docs_dir: 'build'
 
 pages:
   - Home: index.md
-#  - Manual:
-#    - Installation & Usage: install.md
-#    - Valuation: valuation.md
-#    - Display & Formatting: display.md
-#    - Custom Currencies: custom.md
-#    - Rounding: rounding.md
-#    - Notes on Performance: performance.md
-#  - Reference: reference.md
 
 extra:
   version: 0.5.0
