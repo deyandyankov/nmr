@@ -1,4 +1,7 @@
-println("runtests: $(pwd())")
+using FactCheck
+
+addprocs(4)
+using nmr
 
 testfiles = [f for f in readdir(".") if isfile(f) && startswith(f, "test_") && endswith(f, ".jl")]
 function run_test(testfile)
