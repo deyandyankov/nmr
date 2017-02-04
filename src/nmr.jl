@@ -1,5 +1,8 @@
 """
-Naive MapReduce module
+nmr - Naive MapReduce module
+
+NMR is a Naive MapReduce implementation.
+It has a simple interface that allows the user to input a filename and process it in a map-reduce fashion.
 """
 module nmr
   pkgdir = Pkg.dir("nmr")
@@ -19,9 +22,6 @@ module nmr
   include("udf/reducers.jl")
   include("udf/combiners.jl")
 
-  """
-  Run a job of type nmr.NMR
-  """
   function runjob(j)
     info("Running job: $j")
     split_raw_data(j.input_filename)

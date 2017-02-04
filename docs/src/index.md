@@ -1,11 +1,7 @@
 # NMR Documentation
 
-some text here
+This is the documentation for the nmr module.
 
 ```@docs
 nmr
-```
-
-```@docs
-nmr.runjob
 ```
