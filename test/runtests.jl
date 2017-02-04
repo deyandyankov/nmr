@@ -1,8 +1,9 @@
 using FactCheck
-
-addprocs(4)
+using JSON
+# addprocs(4)
 using nmr
 
+reload("nmr")
 testfiles = [f for f in readdir(".") if isfile(f) && startswith(f, "test_") && endswith(f, ".jl")]
 function run_test(testfile)
   info("Running test file $(testfile)")
