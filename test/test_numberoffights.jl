@@ -2,4 +2,4 @@
 reload("nmr")
 j = nmr.NMR(3, "AComp_Passenger_data.csv", nmr.mapper_numberofflights, nmr.reducer_numberofflights, nmr.combiner_numberofflights)
 numberofflights = nmr.runjob(j)
-@fact length(numberofflights) --> 28
+@fact length(numberofflights) --> 23

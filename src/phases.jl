@@ -17,11 +17,17 @@ function runmapper(j)
   inputfile = joinpath(splitdir, string(myid()), j.input_filename)
   io_input = open(inputfile)
   io_output = write_sink(j, "map")
-  for line in eachline(io_input)
-    v = get(j.mapper(line), "")
-    v == "" && continue
-    #info("runmapper(): " * v)
-    write(io_output, v * "\n")
+  for (linenum, line) in enumerate(eachline(io_input))
+    try
+      v = j.mapper(line)
+      write(io_output, v * "\n")
+    catch e
+      if typeof(e) in [MapperException, UDFException]
+        warn("[JOB $(j.jobid)] mapper encountered an exception of type $(typeof(e)) on line $(linenum): $(e.msg)")
+      else
+        rethrow(e)
+      end
+    end
   end
   close(io_input)
   close(io_output)
@@ -42,6 +48,9 @@ function runreducer(j)
 
   io_input = read_sink(j, "map")
   io_output = write_sink(j, "reduce")
+
+  # this reads the input lines into memory and passes them to the reducer
+  # perhaps it's better to pass line by line, freeing previous lines, and let the reducer keep track of them internally if necessary?
   write(io_output, j.reducer(readlines(io_input)))
 
   close(io_input)

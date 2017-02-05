@@ -1,45 +1,25 @@
 function mapper_getairports(x::AbstractString)
-  default_return = Nullable{typeof(x)}()
   line = chomp(x)
   separator = ","
 
-  if line == ""
-    info("mapper: skipping empty line...")
-    return default_return
-  end
-
+  isempty(line) && throw(MapperException("line is empty"))
   s = split(line, separator)
-  if length(s) < 4
-    info("mapper: skipping malformed line: $(line)")
-    return default_return
-  end
-
-  airportid = s[1]
+  length(s) < 4 && throw("malformed line has less than four elements")
+  airportid = s[2]
   airport = udf_airport(airportid)
-  Nullable(airport.id)
+  airport.id
 end
 
 function mapper_numberofflights(x::AbstractString)
-  default_return = Nullable{typeof(x)}()
   line = chomp(x)
   separator = ","
-
-  if line == ""
-    info("mapper: skipping empty line...")
-    return default_return
-  end
-
+  isempty(line) && throw(MapperException("line is empty"))
   s = split(line, separator)
-  if length(s) < 6
-    info("mapper: skipping malformed line: $(line)")
-    return default_return
-  end
-
+  length(s) < 6 && throw(MapperException("malformed line has less than six elements when split by ,"))
   flightid, originairport = s[2], s[3]
-  if flightid == "" || originairport == ""
-    info("mapper: skipping malformed line: $(line)")
-    return default_return
-  end
+  (isempty(flightid) || isempty(originairport)) && throw(MapperException("malformed line (empty flight/origin)"))
+
+  airport = udf_airport(originairport)
   flight = udf_flight(flightid, udf_airport(originairport))
-  Nullable(JSON.json(flight))
+  JSON.json(flight)
 end

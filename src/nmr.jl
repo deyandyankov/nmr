@@ -6,7 +6,7 @@ It has a simple interface that allows the user to input a filename and process i
 """
 module nmr
   using JSON
-  
+
   pkgdir = Pkg.dir("nmr")
   datadir = "NMR_DATADIR" in keys(ENV) ? ENV["NMR_DATADIR"] : joinpath(pkgdir, "test", "data")
   splitdir = "NMR_SPLITDIR" in keys(ENV) ? ENV["NMR_SPLITDIR"] : joinpath(pkgdir, "test", "split")
