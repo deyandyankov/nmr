@@ -20,7 +20,8 @@ function runmapper(j)
   for line in eachline(io_input)
     v = get(j.mapper(line), "")
     v == "" && continue
-    write(io_output, v)
+    #info("runmapper(): " * v)
+    write(io_output, v * "\n")
   end
   close(io_input)
   close(io_output)

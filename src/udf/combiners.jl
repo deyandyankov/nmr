@@ -3,5 +3,8 @@ function combiner_example(input)
 end
 
 function combiner_getairports(input)
-  return input
+    map(chomp, input)
+end
+function combiner_numberofflights(input)
+  JSON.parse(input[1])
 end

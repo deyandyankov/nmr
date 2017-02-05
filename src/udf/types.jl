@@ -1,6 +1,8 @@
 immutable udf_airport
-  key::String
-  name::String
-  lat::Float64
-  lon::Float64
+  airportcode::String
+end
+
+immutable udf_flight
+  flightid::String
+  airportcode::String
 end
