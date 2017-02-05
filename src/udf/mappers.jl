@@ -14,9 +14,9 @@ function mapper_getairports(x::AbstractString)
     return default_return
   end
 
-  airportcode = s[1]
-  airport = udf_airport(airportcode)
-  Nullable(airport.airportcode)
+  airportid = s[1]
+  airport = udf_airport(airportid)
+  Nullable(airport.id)
 end
 
 function mapper_numberofflights(x::AbstractString)
@@ -40,7 +40,6 @@ function mapper_numberofflights(x::AbstractString)
     info("mapper: skipping malformed line: $(line)")
     return default_return
   end
-
-  flight = udf_flight(flightid, originairport)
+  flight = udf_flight(flightid, udf_airport(originairport))
   Nullable(JSON.json(flight))
 end

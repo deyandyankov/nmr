@@ -1,8 +1,8 @@
 immutable udf_airport
-  airportcode::String
+  id::String
 end
 
 immutable udf_flight
   flightid::String
-  airportcode::String
+  airport::Nullable{udf_airport}
 end
