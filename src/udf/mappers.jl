@@ -1,7 +1,3 @@
-function mapper_example(x::AbstractString)
-  return chomp(x) * "!!!\n"
-end
-
 function mapper_getairports(x::AbstractString)
   default_return = Nullable{typeof(x)}()
   line = chomp(x)
