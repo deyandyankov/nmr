@@ -7,8 +7,7 @@ function reducer_numberofflights(s)
   flightsfromairport = Dict{Any, Int}()
   for k in u
     j = JSON.parse(k)
-    flightid = j["flightid"]
-    fromairport = j["fromairport"]
+    fromairport = j["originairport"]
     flightsfromairport[fromairport] = get(flightsfromairport, fromairport, 0) + 1
   end
 

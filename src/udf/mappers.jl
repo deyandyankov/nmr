@@ -4,10 +4,11 @@ function mapper_parserecordacomp(x::AbstractString)
   isempty(line) && throw(MapperException("line is empty"))
   s = split(line, separator)
   length(s) < 6 && throw(MapperException("malformed line has less than six elements when split by ,"))
-  r = Dict{Symbol, Any}()
-  r[:flightid] = get(UDFFlightId(s[2]))
-  r[:fromairport] = get(UDFAirportCode(s[3]))
-  r
+  Dict(
+    Symbol("flightid") => UDFFlightId(s[2]),
+    Symbol("originairport") => UDFAirportCode(s[3]),
+    Symbol("dstairport") => UDFAirportCode(s[4])
+  )
 end
 
 function mapper_numberofflights(x::AbstractString)
