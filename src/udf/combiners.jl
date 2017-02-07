@@ -5,5 +5,8 @@ function combiner_numberofflights(input)
   JSON.parse(input[1])
 end
 function combiner_listofflights(input)
-  JSON.parse(input[1])
+  [JSON.parse(line) for line in input]
+end
+function combiner_numberofpassengers(input)
+  [JSON.parse(line) for line in input]
 end

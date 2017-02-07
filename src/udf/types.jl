@@ -1,14 +1,18 @@
-import Base: ==, convert, promotevaluerule
+import Base: ==, convert
 
-abstract UDFType{T}
-promotevaluerule{T}(x::Type{UDFType{T}}, y::Type{T}) = T
-convert{T}(::Type{T}, x::UDFType{T}) = convert(T, x.value)
-=={T}(x::UDFType{T}, y::UDFType{T}) = x.value == y.value
-=={T}(x::T, y::UDFType{T}) = x == convert(T, y.value)
-=={T}(x::UDFType{T}, y::T) = convert(T, x.value) == y
+abstract UDFType
+=={T<:UDFType}(x::T, y::T) = x.value == y.value
 JSON.lower(x::UDFType) = x.value
 
-immutable UDFAirportName{T<:AbstractString} <: UDFType
+abstract UDFNPType <: UDFType
+
+abstract UDFPtype{T} <: UDFType
+promote_rule{T}(x::Type{UDFPtype{T}}, y::Type{T}) = T
+convert{T}(::Type{T}, x::UDFPtype{T}) = convert(T, x.value)
+# =={T}(x::T, y::UDFPtype{T}) = x == convert(T, y.value)
+# =={T}(x::UDFPtype{T}, y::T) = convert(T, x.value) == y
+
+immutable UDFAirportName{T<:AbstractString} <: UDFPtype
   value::T
 end
 function UDFAirportName{T<:AbstractString}(value::T)
@@ -17,7 +21,7 @@ function UDFAirportName{T<:AbstractString}(value::T)
   UDFAirportName{T}(value)
 end
 
-immutable UDFAirportCode{T<:AbstractString} <: UDFType
+immutable UDFAirportCode{T<:AbstractString} <: UDFPtype
   value::T
 end
 function UDFAirportCode{T<:AbstractString}(value::T)
@@ -26,7 +30,7 @@ function UDFAirportCode{T<:AbstractString}(value::T)
   UDFAirportCode{T}(value)
 end
 
-immutable UDFFlightId{T<:AbstractString} <: UDFType
+immutable UDFFlightId{T<:AbstractString} <: UDFPtype
   value::T
 end
 function UDFFlightId{T<:AbstractString}(value::T)
@@ -35,11 +39,38 @@ function UDFFlightId{T<:AbstractString}(value::T)
   UDFFlightId{T}(value)
 end
 
-immutable UDFPassengerId{T<:AbstractString} <: UDFType
+immutable UDFPassengerId{T<:AbstractString} <: UDFPtype
   value::T
 end
 function UDFPassengerId{T<:AbstractString}(value::T)
   m = match(r"^[A-Z0-9]{10}$", value)
   is(typeof(m), Void) && throw(UDFException("Invalid passenger id: $value"))
   UDFPassengerId{T}(value)
+end
+
+immutable UDFDepartureTime <: UDFNPType
+  value::DateTime
+end
+function UDFDepartureTime{T<:AbstractString}(value::T)
+  m = match(r"^[0-9]*$", value)
+  is(typeof(m), Void) && throw(UDFException("Invalid DepartureTime: $value"))
+  UDFDepartureTime(parse(value))
+end
+function UDFDepartureTime{T<:Real}(value::T)
+  UDFDepartureTime(Dates.unix2datetime(value))
+end
+
+immutable UDFTotalFlightTime <: UDFNPType
+  value::Int16
+end
+convert{T<:Real}(::Type{T}, x::UDFTotalFlightTime) = convert(T, x.value)
+
+function UDFTotalFlightTime{T<:Real}(value::T)
+  UDFTotalFlightTime(convert(Int16, value))
+end
+function UDFTotalFlightTime{T<:AbstractString}(value::T)
+  x = parse(Int16, value)
+  x < 0 && throw(UDFException("total flight time must be a positive integer"))
+  x > 1200 && throw(UDFException("invalid flight time $x - flights cannot go longer than 20 hours"))
+  UDFTotalFlightTime(x)
 end
