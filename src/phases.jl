@@ -19,7 +19,7 @@ function runmapper(j)
   io_output = write_sink(j, "map")
   for (linenum, line) in enumerate(eachline(io_input))
     try
-      v = j.mapper(line)
+      v = json(j.mapper(line))
       write(io_output, v * "\n")
     catch e
       if typeof(e) in [MapperException, UDFException]
@@ -51,7 +51,7 @@ function runreducer(j)
 
   # this reads the input lines into memory and passes them to the reducer
   # perhaps it's better to pass line by line, freeing previous lines, and let the reducer keep track of them internally if necessary?
-  write(io_output, j.reducer(readlines(io_input)))
+  write(io_output, json(j.reducer(readlines(io_input))))
 
   close(io_input)
   close(io_output)
