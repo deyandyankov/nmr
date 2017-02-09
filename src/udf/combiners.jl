@@ -1,1 +1,1 @@
-combiner_parsejson(input) = input
+combiner_parsejson(input) = [chomp(line) for line in input]

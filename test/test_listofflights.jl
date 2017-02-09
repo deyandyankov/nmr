@@ -4,5 +4,4 @@
 reload("nmr")
 j = nmr.NMR(2, "AComp_Passenger_data.csv", nmr.mapper_parserecordacomp, nmr.reducer_noop, nmr.combiner_parsejson)
 listofflights = nmr.runjob(j)
-@test typeof(listofflights) == Vector{Any}
-@test JSON.parse(JSON.parse(listofflights[1])[1])["originairport"] == "DEN"
+@test JSON.parse(JSON.parse(listofflights[1]))["originairport"] == "DEN"

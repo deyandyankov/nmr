@@ -20,3 +20,15 @@ function reducer_numberofpassengers(s)
   end
   r
 end
+function reducer_lineofsightpassenger(s)
+  u = unique(s)
+  r = Dict{String, Tuple{String, String}}()
+  for k in u
+    j = JSON.parse(k)
+    key = j["flightid"]
+    value = (j["originairport"], j["dstairport"])
+    r[key] = value
+  end
+
+  [(k, v) for (k, v) in r]
+end

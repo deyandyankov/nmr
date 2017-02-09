@@ -51,7 +51,9 @@ function runreducer(j)
 
   # this reads the input lines into memory and passes them to the reducer
   # perhaps it's better to pass line by line, freeing previous lines, and let the reducer keep track of them internally if necessary?
-  write(io_output, json(j.reducer(readlines(io_input))))
+  for r in j.reducer(readlines(io_input))
+    write(io_output, json(r) * "\n")
+  end
 
   close(io_input)
   close(io_output)
