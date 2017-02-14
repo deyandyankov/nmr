@@ -2,25 +2,31 @@ function phase_create_area(j)
   create_job_area(j)
 end
 
-function phase_map(j)
-  info("initiating mapping phase")
-  wrkrs = workers()
-  r = [@spawnat w runmapper(j) for w in wrkrs]
-  for ri in r
-    wait(ri)
-  end
-  info("mapping phase finished")
+function phase_run(j)
+  info("initiating run phase")
+  r = [@spawnat w runfun(j) for w in workers()]
+  map(wait, r)
+  info("run phase finished")
 end
 
-function runmapper(j)
-  info("map worker $(myid()) initiated")
-  inputfile = joinpath(splitdir, string(myid()), j.input_filename)
+function runfun(j)
+  info("runfun worker $(myid()) initiated")
+  length(j.inputs) > 2 && throw(ArgumentError("Cannot operate on more than two inputs."))
+  length(j.inputs) == 1 && runfuni1(j)
+  length(j.inputs) == 2 && runfuni2(j)
+  info("runfun worker $(myid()) finished")
+end
+
+function runfuni1(j)
+  info("runfuni1 $(myid()) initiated")
+  input_filename = j.inputs[1]
+  inputfile = joinpath(splitdir, string(myid()), input_filename)
   io_input = open(inputfile)
-  io_output = write_sink(j, "map")
+  io_output = write_sink(j)
   for (linenum, line) in enumerate(eachline(io_input))
     try
-      v = json(j.mapper(line))
-      write(io_output, v * "\n")
+      v = j.fun(line)
+      v != "" && write(io_output, json(v) * "\n")
     catch e
       if typeof(e) in [MapperException, UDFException]
         warn("[JOB $(j.jobid)] mapper encountered an exception of type $(typeof(e)) on line $(linenum): $(e.msg)")
@@ -29,48 +35,23 @@ function runmapper(j)
       end
     end
   end
+
+  if length(ctx) > 0
+    for (k, v) in ctx
+      write(io_output, json((k, v)) * "\n")
+    end
+  end
   close(io_input)
   close(io_output)
-  info("map worker $(myid()) finished")
-  return true
+  info("runfuni1 $(myid()) finished")
 end
 
-function phase_reduce(j)
-  wrkrs = workers()
-  r = [@spawnat w runreducer(j) for w in wrkrs]
-  for ri in r
-    wait(ri)
-  end
-end
-
-function runreducer(j)
-  debug("reducer $(myid()) initiated")
-
-  io_input = read_sink(j, "map")
-  io_output = write_sink(j, "reduce")
-
-  # this reads the input lines into memory and passes them to the reducer
-  # perhaps it's better to pass line by line, freeing previous lines, and let the reducer keep track of them internally if necessary?
-  for r in j.reducer(readlines(io_input))
-    write(io_output, json(r) * "\n")
-  end
-
-  close(io_input)
-  close(io_output)
-
-  debug("reducer $(myid()) finished")
-  return true
-end
-
-function phase_combine(j)
-  wrkrs = workers()
-  last_output_phase = last_output_phase_before_combiner(j)
-  r = [@spawnat w read_sink_lines(j, last_output_phase) for w in wrkrs]
+function runcombiner(filename, fun_combiner)
+  r = [@spawnat w readlines(joinpath(splitdir, string(w), filename)) for w in workers()]
   combined = []
-  for i = 1:length(r)
-    wait(r[i])
-    append!(combined, fetch(r[i]))
+  map(wait, r)
+  for p in r
+    append!(combined, fetch(p))
   end
-  combined_output = j.combiner(combined)
-  return combined_output
+  fun_combiner(combined)
 end

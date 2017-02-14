@@ -2,6 +2,10 @@
 # relevant IATA/FAA codes, the departure time, the arrival time
 # (times to be converted toHH:MM:SS format), and the flight times.
 reload("nmr")
-j = nmr.NMR(2, "AComp_Passenger_data.csv", nmr.mapper_parserecordacomp, nmr.reducer_noop, nmr.combiner_parsejson)
-listofflights = nmr.runjob(j)
-@test JSON.parse(JSON.parse(listofflights[1]))["originairport"] == "DEN"
+
+nmr.runjob(nmr.NMR(3, ["AComp_Passenger_data.csv"], nmr.mapper_parserecordacomp, "acompdata.json"))
+c = nmr.runcombiner("acompdata.json", nmr.combiner_parsejson)
+
+@test typeof(c) == Vector{String}
+@test length(c) == 264
+@test JSON.parse(c[1])["totalflighttime"] == 1049

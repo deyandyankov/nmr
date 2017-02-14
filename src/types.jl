@@ -1,9 +1,8 @@
-type NMR
+immutable NMR
   jobid::Int
-  input_filename::String
-  mapper::Function
-  reducer::Function
-  combiner::Function
+  inputs::Array{String}
+  fun::Function
+  outputfilename::String
 end
 
 type MapperException <: Exception

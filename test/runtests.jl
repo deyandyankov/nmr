@@ -1,4 +1,4 @@
-# addprocs(4)
+addprocs(4)
 using Base.Test
 using FactCheck
 using JSON

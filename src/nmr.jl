@@ -12,6 +12,9 @@ module nmr
   splitdir = "NMR_SPLITDIR" in keys(ENV) ? ENV["NMR_SPLITDIR"] : joinpath(pkgdir, "test", "split")
   outputdir = "NMR_OUTPUTDIR" in keys(ENV) ? ENV["NMR_OUTPUTDIR"] : joinpath(pkgdir, "test", "output")
 
+  ctx = Dict{String, Any}()
+  default_ctx = Dict{String, Any}()
+
   # required for correct module operation
   include("logging_config.jl")
   include("types.jl")
@@ -26,12 +29,12 @@ module nmr
 
   function runjob(j)
     info("Running job: $j")
-    split_raw_data(j.input_filename)
+    split_raw_data(j)
     phase_create_area(j)
-    phase_map(j)
-    phase_reduce(j)
-    output = phase_combine(j)
-    return output
+    phase_run(j)
+    ctx = copy(default_ctx)
+
+    return true
   end
 
 end # module

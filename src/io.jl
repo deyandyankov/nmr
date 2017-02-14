@@ -1,30 +1,34 @@
 # todo: potentially add caching. only execute if input filename has been modified after the splitdir contents
-function split_raw_data(filename)
-  wrkrs = workers()
-  input_filename = joinpath(datadir, filename) # the file we're reading
-  info("Splitting $input_filename using $(length(wrkrs)) workers")
-  output_filenames = Array(String, length(wrkrs))
-  for i in 1:length(wrkrs)
-    output_dir = joinpath(splitdir, string(wrkrs[i]))
-    isdir(output_dir) && rm(output_dir, force=true, recursive=true)
-    mkdir(output_dir)
-    output_filenames[i] = joinpath(output_dir, filename)
-    isfile(output_filenames[i]) && rm(output_filenames[i])
-  end
-  # open the files for writing (1 file per core)
-  handles = [open(f, "w") for f in output_filenames]
-  handle = 1
-  for ln in readlines(input_filename)
-    current_output_file = output_filenames[handle]
-    # println("current handle: $(handle) and current output filename $(output_filenames[handle])")
-    current_handle = handles[handle]
-    write(current_handle, ln) # write line into current handle
-    handle += 1 # get next handle
-    if handle > length(handles)
-      handle = 1 # cycle back to first handle once handles have been exhausted
+function split_raw_data(j)
+  for filename in j.inputs
+    wrkrs = workers()
+    input_filename = joinpath(datadir, filename)
+    !isfile(input_filename) && return true # not in data/ but already in split/
+    info("Splitting $input_filename using $(length(wrkrs)) workers")
+    output_filenames = Array(String, length(wrkrs))
+    for i in 1:length(wrkrs)
+      output_dir = joinpath(splitdir, string(wrkrs[i]))
+      #isdir(output_dir) && rm(output_dir, force=true, recursive=true)
+      #mkdir(output_dir)
+      !isdir(output_dir) && mkdir(output_dir)
+      output_filenames[i] = joinpath(output_dir, filename)
+      #isfile(output_filenames[i]) && rm(output_filenames[i])
     end
+    # open the files for writing (1 file per core)
+    handles = [open(f, "w") for f in output_filenames]
+    handle = 1
+    for ln in readlines(input_filename)
+      current_output_file = output_filenames[handle]
+      # println("current handle: $(handle) and current output filename $(output_filenames[handle])")
+      current_handle = handles[handle]
+      write(current_handle, ln) # write line into current handle
+      handle += 1 # get next handle
+      if handle > length(handles)
+        handle = 1 # cycle back to first handle once handles have been exhausted
+      end
+    end
+    map(close, handles) # close all output handles
   end
-  map(close, handles) # close all output handles
   return true
 end
 
@@ -49,8 +53,8 @@ function read_sink_lines(j, phase)
   return lines
 end
 
-function write_sink(j, phase)
-  outputfile = joinpath(job_output_dir(j), string(myid()) * "." * phase)
+function write_sink(j)
+  outputfile = joinpath(splitdir, string(myid()), j.outputfilename)
   isfile(outputfile) && rm(outputfile)
   open(outputfile, "w")
 end
