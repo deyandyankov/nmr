@@ -4,7 +4,7 @@ using FactCheck
 using JSON
 using nmr
 
-#addprocs(Sys.CPU_CORES)
+addprocs(Sys.CPU_CORES)
 
 @time cd(joinpath(Pkg.dir("nmr"), "test")) do
   function run_test(testfile)

@@ -8,11 +8,8 @@ function split_raw_data(j)
     output_filenames = Array(String, length(wrkrs))
     for i in 1:length(wrkrs)
       output_dir = joinpath(splitdir, string(wrkrs[i]))
-      #isdir(output_dir) && rm(output_dir, force=true, recursive=true)
-      #mkdir(output_dir)
       !isdir(output_dir) && mkdir(output_dir)
       output_filenames[i] = joinpath(output_dir, filename)
-      #isfile(output_filenames[i]) && rm(output_filenames[i])
     end
     # open the files for writing (1 file per core)
     handles = [open(f, "w") for f in output_filenames]
