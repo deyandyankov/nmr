@@ -24,13 +24,14 @@ module nmr
   # user defined functions and types
   include("udf/types.jl")
   include("udf/mappers.jl")
+  include("udf/joiners.jl")
   include("udf/reducers.jl")
   include("udf/combiners.jl")
 
   function runjob(j)
     info("Running job: $j")
     split_raw_data(j)
-    phase_create_area(j)
+    create_job_area(j)
     phase_run(j)
     ctx = copy(default_ctx)
 

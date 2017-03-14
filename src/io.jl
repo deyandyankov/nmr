@@ -46,25 +46,8 @@ function read_sink(j, phase)
   open(inputfile)
 end
 
-function read_sink_lines(j, phase)
-  fh = read_sink(j, phase)
-  lines = readlines(fh)
-  close(fh)
-  return lines
-end
-
 function write_sink(j)
   outputfile = joinpath(splitdir, string(myid()), j.outputfilename)
   isfile(outputfile) && rm(outputfile)
   open(outputfile, "w")
-end
-
-function last_output_phase_before_combiner(j)
-  wrkrs = workers()
-  output_dir = job_output_dir(j)
-  for phase in ["reduce", "map"]
-    phase_filenames = [joinpath(output_dir, string(w) * "." * phase) for w in wrkrs]
-    all(map(isfile, phase_filenames)) && return phase
-  end
-  error("Could not find neither reduce nor map outputs for the current job")
 end

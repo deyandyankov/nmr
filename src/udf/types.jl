@@ -42,6 +42,6 @@ end
 function UDFTotalFlightTime{T<:AbstractString}(value::T)
   x = parse(Int16, value)
   x < 0 && throw(UDFException("total flight time must be a positive integer"))
-  x > 1200 && throw(UDFException("invalid flight time $x - flights cannot go longer than 20 hours"))
+  x > 1200 && throw(UDFException("Invalid flight time $x - flights cannot go longer than 20 hours"))
   x
 end

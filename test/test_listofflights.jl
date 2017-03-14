@@ -3,7 +3,7 @@
 # (times to be converted toHH:MM:SS format), and the flight times.
 reload("nmr")
 
-nmr.runjob(nmr.NMR(3, ["AComp_Passenger_data.csv"], nmr.mapper_parserecordacomp, "acompdata.json"))
+nmr.runjob(nmr.NMR(2, ["AComp_Passenger_data.csv"], nmr.mapper_parserecordacomp, "acompdata.json"))
 c = nmr.runcombiner("acompdata.json", nmr.combiner_parsejson)
 
 @test typeof(c) == Vector{String}
