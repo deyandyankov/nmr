@@ -6,6 +6,6 @@ nmr.runjob(nmr.NMR(1, ["acomp.csv"], nmr.reducer_numberofflights, "acomp_flights
 c = nmr.runcombiner("acomp_flights_reduced.csv", nmr.combiner_parsejson)
 
 @test typeof(c) == Vector{String}
-@test length(c) == 65
+@test length(c) == 17
 @test JSON.parse(c[1])[1] == "AMS"
-@test JSON.parse(c[1])[2] == 3
+@test JSON.parse(c[1])[2] == 13

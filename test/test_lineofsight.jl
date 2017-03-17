@@ -12,7 +12,7 @@ c = nmr.runcombiner("lineofsightpassenger.json", nmr.combiner_parsejson)
 
 # sanity checks
 @test typeof(c) == Vector{String}
-@test length(c) == 65
+@test length(c) == 17
 
 # we need to join the above with airport coordinates to calculate line of sight for each flight
 # we must then create a mr job to calculate passengers and their flights with src and dst airport
