@@ -1,2 +1,2 @@
 # nmr
-Root README file
+See ASSIGNMENT.pdf
